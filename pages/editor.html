@@ -65,12 +65,24 @@
                     </label>
                 </div>
 
-                <div class="sidebar-section">
-                    <h3>🤖 Assistente IA</h3>
-                    <button class="btn-ai" id="aiHelpBtn">Pedir Ajuda</button>
-                    <p class="ai-hint">A IA pode explicar erros e sugerir correções</p>
-                </div>
-
+<div id="aiModal" class="ai-modal">
+    <div class="ai-modal-content">
+        <button id="closeAiModal" class="close-btn">×</button>
+        <h3>🤖 Assistente IA</h3>
+        
+        <div id="aiMessages" class="ai-messages">
+        </div>
+        
+        <div class="ai-input-group">
+            <input 
+                type="text" 
+                id="aiInput" 
+                placeholder="Digite sua pergunta..."
+            />
+            <button id="sendAiBtn">Enviar</button>
+        </div>
+    </div>
+</div>
                 <div class="sidebar-section">
                     <h3>📚 Atalhos</h3>
                     <div class="shortcuts">
