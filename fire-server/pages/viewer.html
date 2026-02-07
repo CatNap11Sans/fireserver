@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fire Server</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+        }
+
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0A0E27 0%, #151A35 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .loader-logo {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        .loader-text {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .loader-subtext {
+            color: #A0A8C5;
+            margin-top: 0.5rem;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .error-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, #0A0E27 0%, #151A35 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .error-icon {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+        }
+
+        .error-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+        }
+
+        .error-message {
+            font-size: 1.2rem;
+            color: #A0A8C5;
+            margin-bottom: 2rem;
+        }
+
+        .btn-home {
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #FF6B35, #F7931E);
+            color: #0A0E27;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 700;
+            transition: all 0.3s;
+        }
+
+        .btn-home:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.4);
+        }
+
+        #siteContainer {
+            display: none;
+        }
+
+        .fire-watermark {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            background: rgba(255, 107, 53, 0.9);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-decoration: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .fire-watermark:hover {
+            background: rgba(247, 147, 30, 0.9);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Loader -->
+    <div class="loader" id="loader">
+        <div class="loader-logo">🔥</div>
+        <div class="loader-text">Carregando site...</div>
+        <div class="loader-subtext">Fire Server</div>
+    </div>
+
+    <!-- Site Container -->
+    <div id="siteContainer"></div>
+
+    <!-- Watermark -->
+    <a href="../index.html" class="fire-watermark" id="watermark" style="display: none;">
+        Feito com 🔥 Fire Server
+    </a>
+
+    <script src="../js/dsl-parser.js"></script>
+    <script src="../js/dsl-renderer.js"></script>
+    <script>
+        class SiteViewer {
+            constructor() {
+                this.parser = new DSLParser();
+                this.renderer = new DSLRenderer();
+                this.username = this.extractUsername();
+                this.init();
+            }
+
+            async init() {
+                if (!this.username) {
+                    this.showError('Usuário não especificado', 'Por favor, acesse através de fireserver.io/usuario');
+                    return;
+                }
+
+                try {
+                    await this.loadSite();
+                } catch (error) {
+                    console.error('Erro ao carregar site:', error);
+                    this.showError('Site não encontrado', `O site @${this.username} não foi encontrado ou ainda não foi publicado.`);
+                }
+            }
+
+            extractUsername() {
+                // Extrair username do path
+                // Formato: /username ou apenas username
+                const path = window.location.pathname;
+                const parts = path.split('/').filter(p => p);
+                
+                if (parts.length > 0 && parts[0] !== 'viewer.html') {
+                    return parts[0];
+                }
+
+                // Tentar query string
+                const params = new URLSearchParams(window.location.search);
+                return params.get('user') || params.get('username');
+            }
+
+            async loadSite() {
+                // Tentar carregar do localStorage primeiro (para desenvolvimento)
+                const localCode = localStorage.getItem(`fire_site_${this.username}`);
+                
+                if (localCode) {
+                    this.renderSite(localCode);
+                    return;
+                }
+
+                // TODO: Carregar do backend
+                // const response = await fetch(`/api/site/${this.username}`);
+                // const data = await response.json();
+                // this.renderSite(data.code);
+
+                throw new Error('Site não encontrado');
+            }
+
+            renderSite(code) {
+                const result = this.parser.parse(code);
+                
+                if (!result.ast || result.errors.length > 0) {
+                    this.showError('Erro no site', 'Este site contém erros e não pode ser exibido.');
+                    return;
+                }
+
+                // Renderizar
+                const container = document.getElementById('siteContainer');
+                this.renderer.render(result.ast, container);
+
+                // Esconder loader e mostrar site
+                document.getElementById('loader').style.display = 'none';
+                container.style.display = 'block';
+                document.getElementById('watermark').style.display = 'block';
+
+                // Atualizar título
+                if (result.ast.config && result.ast.config.title) {
+                    document.title = result.ast.config.title + ' - Fire Server';
+                }
+            }
+
+            showError(title, message) {
+                const loader = document.getElementById('loader');
+                loader.innerHTML = `
+                    <div class="error-container">
+                        <div class="error-icon">😕</div>
+                        <h1 class="error-title">${title}</h1>
+                        <p class="error-message">${message}</p>
+                        <a href="../index.html" class="btn-home">Voltar ao Início</a>
+                    </div>
+                `;
+            }
+        }
+
+        // Inicializar quando página carregar
+        document.addEventListener('DOMContentLoaded', () => {
+            new SiteViewer();
+        });
+    </script>
+</body>
+</html>
