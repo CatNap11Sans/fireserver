@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fire Server</title>
+    <script>
+        // Roteamento para GitHub Pages
+        // Redireciona /username para viewer.html?user=username
+        
+        const path = window.location.pathname;
+        const segments = path.split('/').filter(s => s);
+        
+        // Se houver um segmento (username), redirecionar para viewer
+        if (segments.length === 1 && !segments[0].endsWith('.html')) {
+            const username = segments[0];
+            window.location.replace('/pages/viewer.html?user=' + username);
+        } else {
+            // Redirecionar para home
+            window.location.replace('/');
+        }
+    </script>
+</head>
+<body>
+    <p>Redirecionando...</p>
+</body>
+</html>

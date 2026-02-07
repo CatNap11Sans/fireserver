@@ -1,0 +1,30 @@
+# GitHub Pages configuration
+# This file is used by GitHub Pages to configure the site
+
+# Theme (not used since we have custom HTML/CSS)
+theme: null
+
+# Exclude files from Jekyll processing
+exclude:
+  - README.md
+  - LICENSE
+  - .gitignore
+  - node_modules/
+
+# Include important files
+include:
+  - _redirects
+  - 404.html
+
+# Disable Jekyll processing
+# We're using pure HTML/CSS/JS
+markdown: kramdown
+
+# Site settings (optional)
+title: Fire Server
+description: Crie sites incríveis sem escrever código
+url: https://fireserver.io
+baseurl: ""
+
+# Build settings
+plugins: []
