@@ -1,34 +1,49 @@
 /**
- * Fire Server AI Assistant v2.0
- * Sistema inteligente baseado em intenções (não keywords secas)
+ * Fire Assistant - Implementação Correta
+ * Assistente focado exclusivamente no Fire Server e sua DSL
+ * SEM ensino de outras linguagens
  */
 
-class AIAssistant {
+class FireAssistant {
     constructor() {
+        // Identidade fixa (NÃO muda)
+        this.identity = {
+            name: "Fire Assistant",
+            role: "assistente do Fire Server",
+            creator: "Equipe do Fire Server",
+            scope: [
+                "explicar o Fire Server",
+                "ajudar com a DSL",
+                "explicar erros do editor"
+            ],
+            forbidden: [
+                "compras",
+                "robux",
+                "golpes",
+                "conteúdos externos perigosos",
+                "ensinar linguagens não relacionadas"
+            ]
+        };
+
+        // Tipos de perguntas
+        this.QUESTION_TYPE = {
+            GREETING: "greeting",
+            IDENTITY: "identity",
+            PLATFORM: "platform",
+            DSL: "dsl",
+            ERROR: "error",
+            OFF_TOPIC: "off_topic",
+            FORBIDDEN: "forbidden",
+            UNKNOWN: "unknown"
+        };
+
         this.chatHistory = [];
-        this.context = this.buildContext();
-        this.knowledgeBase = this.buildKnowledgeBase();
         this.init();
     }
 
     /**
-     * 🧩 CAMADA 1 — Contexto fixo do projeto
+     * Inicializa o assistente
      */
-    buildContext() {
-        return {
-            project: "Fire Server DSL",
-            languageUsed: "DSL própria (não Python, JavaScript, etc)",
-            forbidden: ["javascript do usuário", "html cru", "código malicioso"],
-            allowedHelp: ["conceitos", "exemplos", "código educacional de outras linguagens"],
-            maxLimits: {
-                lines: 200,
-                elements: 100,
-                images: 10,
-                chars: 10000
-            }
-        };
-    }
-
     init() {
         const sendBtn = document.getElementById('sendAiBtn');
         const input = document.getElementById('aiInput');
@@ -52,93 +67,22 @@ class AIAssistant {
             });
         }
 
-        // Mensagem inicial
-        this.addMessage('ai', '👋 Olá! Sou seu assistente do Fire Server.\n\nPosso te ajudar com:\n• 📝 Como usar a DSL\n• 🐛 Entender erros\n• 💡 Ensinar programação (Python, JS, etc)\n• 🎨 Dar exemplos\n\nComo posso ajudar?');
+        // Mensagem de boas-vindas
+        this.addMessage('ai', this.getWelcomeMessage());
     }
 
     /**
-     * 🧩 CAMADA 2 — Classificação de intenção
-     * O que o usuário está TENTANDO fazer?
+     * Mensagem de boas-vindas
      */
-    classifyIntent(msg) {
-        const msgLower = msg.toLowerCase().trim();
+    getWelcomeMessage() {
+        return `👋 Olá! Sou o assistente do Fire Server.
 
-        // Intenção: Aprender uma linguagem de programação
-        if (this.matchesPattern(msgLower, [
-            'me ensina', 'como aprender', 'quero aprender', 'ensinar',
-            'tutorial', 'aprender python', 'aprender javascript', 'aprender java'
-        ])) {
-            return { type: 'learn_language', language: this.detectLanguage(msg) };
-        }
+Posso te ajudar com:
+• 📝 Como usar a DSL
+• 🐛 Entender erros do editor
+• 🎨 Dar exemplos de páginas
 
-        // Intenção: Pedir código pronto
-        if (this.matchesPattern(msgLower, [
-            'cria um codigo', 'me da um codigo', 'gera codigo', 'faz um site',
-            'cria um site', 'codigo pronto', 'faz pra mim', 'copiar codigo'
-        ])) {
-            return { type: 'request_code', specifics: msg };
-        }
-
-        // Intenção: Ajuda com DSL do Fire Server
-        if (this.matchesPattern(msgLower, [
-            'page', 'text', 'button', 'image', 'divider', 'jump', 'title',
-            'como criar', 'como fazer', 'dsl', 'fire server', 'load', 'color', 'font'
-        ])) {
-            return { type: 'dsl_help', command: this.detectDSLCommand(msg) };
-        }
-
-        // Intenção: Confusão ou não entendeu algo
-        if (this.matchesPattern(msgLower, [
-            'nao entendi', 'não entendi', 'confuso', 'o que é', 'explica',
-            'não sei', 'nao sei', 'como assim', 'por que', 'porque'
-        ])) {
-            return { type: 'confusion', topic: msg };
-        }
-
-        // Intenção: Erro ou problema
-        if (this.matchesPattern(msgLower, [
-            'erro', 'error', 'bug', 'não funciona', 'nao funciona',
-            'problema', 'deu errado', 'ajuda'
-        ])) {
-            return { type: 'error_help', context: msg };
-        }
-
-        // Padrão: Off-topic ou cumprimento
-        if (this.matchesPattern(msgLower, ['oi', 'olá', 'ola', 'hey', 'bom dia', 'boa tarde'])) {
-            return { type: 'greeting' };
-        }
-
-        return { type: 'off_topic', message: msg };
-    }
-
-    /**
-     * Helper: Verifica se mensagem contém algum padrão
-     */
-    matchesPattern(msg, patterns) {
-        return patterns.some(pattern => msg.includes(pattern));
-    }
-
-    /**
-     * Helper: Detecta linguagem mencionada
-     */
-    detectLanguage(msg) {
-        const msgLower = msg.toLowerCase();
-        if (msgLower.includes('python')) return 'Python';
-        if (msgLower.includes('javascript') || msgLower.includes('js')) return 'JavaScript';
-        if (msgLower.includes('java')) return 'Java';
-        if (msgLower.includes('c++')) return 'C++';
-        if (msgLower.includes('html')) return 'HTML';
-        if (msgLower.includes('css')) return 'CSS';
-        return null;
-    }
-
-    /**
-     * Helper: Detecta comando DSL mencionado
-     */
-    detectDSLCommand(msg) {
-        const msgLower = msg.toLowerCase();
-        const commands = ['page', 'text', 'button', 'image', 'divider', 'jump', 'title', 'load', 'color', 'font', 'size', 'end'];
-        return commands.find(cmd => msgLower.includes(cmd)) || null;
+Como posso ajudar?`;
     }
 
     /**
@@ -154,11 +98,9 @@ class AIAssistant {
         this.addMessage('user', message);
         input.value = '';
 
-        // Classificar intenção
-        const intent = this.classifyIntent(message);
-
-        // Gerar resposta baseada na intenção
-        const response = this.generateResponse(intent, message);
+        // Detectar tipo e gerar resposta
+        const type = this.detectType(message);
+        const response = this.generateResponse(type, message);
 
         // Adicionar resposta da IA
         setTimeout(() => {
@@ -167,166 +109,175 @@ class AIAssistant {
     }
 
     /**
-     * Gera resposta baseada na intenção do usuário
+     * CLASSIFICADOR DE INTENÇÕES
+     * Detecta o TIPO da pergunta, não palavras soltas
      */
-    generateResponse(intent, originalMessage) {
-        switch (intent.type) {
-            case 'learn_language':
-                return this.responseLearnLanguage(intent.language);
+    detectType(msg) {
+        const msgLower = msg.toLowerCase().trim();
 
-            case 'request_code':
-                return this.responseRequestCode(intent.specifics);
+        // Prioridade 1: Cumprimento (exato)
+        if (this.isGreeting(msgLower)) {
+            return this.QUESTION_TYPE.GREETING;
+        }
 
-            case 'dsl_help':
-                return this.responseDSLHelp(intent.command);
+        // Prioridade 2: Identidade
+        if (this.isIdentity(msgLower)) {
+            return this.QUESTION_TYPE.IDENTITY;
+        }
 
-            case 'confusion':
-                return this.responseConfusion(intent.topic);
+        // Prioridade 3: Plataforma
+        if (this.isPlatform(msgLower)) {
+            return this.QUESTION_TYPE.PLATFORM;
+        }
 
-            case 'error_help':
-                return this.responseErrorHelp(intent.context);
+        // Prioridade 4: Proibido (robux, compras)
+        if (this.isForbidden(msgLower)) {
+            return this.QUESTION_TYPE.FORBIDDEN;
+        }
 
-            case 'greeting':
+        // Prioridade 5: Off-topic (ensinar outras linguagens)
+        if (this.isOffTopic(msgLower)) {
+            return this.QUESTION_TYPE.OFF_TOPIC;
+        }
+
+        // Prioridade 6: DSL
+        if (this.isDSL(msgLower)) {
+            return this.QUESTION_TYPE.DSL;
+        }
+
+        // Prioridade 7: Erro
+        if (this.isError(msgLower)) {
+            return this.QUESTION_TYPE.ERROR;
+        }
+
+        // Fallback
+        return this.QUESTION_TYPE.UNKNOWN;
+    }
+
+    /**
+     * Detectores de tipo
+     */
+    isGreeting(msg) {
+        const greetings = ["oi", "ola", "olá", "eai", "hey", "bom dia", "boa tarde", "boa noite"];
+        return greetings.some(g => msg === g || msg === g + "!");
+    }
+
+    isIdentity(msg) {
+        const patterns = [
+            "quem é você",
+            "o que você é",
+            "qual seu nome",
+            "quem são você",
+            "você é o que",
+            "me diz quem você é"
+        ];
+        return patterns.some(p => msg.includes(p));
+    }
+
+    isPlatform(msg) {
+        const patterns = ["quem criou", "dono", "quem fez", "criador", "quem é o dono"];
+        return patterns.some(p => msg.includes(p)) && 
+               (msg.includes("fire") || msg.includes("servidor") || msg.includes("plataforma"));
+    }
+
+    isDSL(msg) {
+        const commands = ["page", "text", "button", "image", "divider", "jump", "title", "load", "end"];
+        const helps = ["como usar", "exemplo de", "sintaxe", "como fazer", "como criar"];
+        
+        return commands.some(c => msg.includes(c)) || helps.some(h => msg.includes(h));
+    }
+
+    isError(msg) {
+        const errors = ["erro", "bug", "não funciona", "nao funciona", "problema", "ajuda", "deu errado"];
+        return errors.some(e => msg.includes(e));
+    }
+
+    isForbidden(msg) {
+        const forbidden = [
+            "robux",
+            "comprar",
+            "vender",
+            "hack",
+            "roubar",
+            "golpe",
+            "free robux",
+            "moeda"
+        ];
+        return forbidden.some(f => msg.includes(f));
+    }
+
+    isOffTopic(msg) {
+        const topics = [
+            "me ensina",
+            "tutorial",
+            "python",
+            "javascript",
+            "java ",
+            "c++",
+            "html",
+            "css",
+            "aprender",
+            "qual linguagem"
+        ];
+        return topics.some(t => msg.includes(t));
+    }
+
+    /**
+     * Gera resposta baseada no tipo
+     */
+    generateResponse(type, message) {
+        switch(type) {
+            case this.QUESTION_TYPE.GREETING:
                 return this.responseGreeting();
 
-            case 'off_topic':
-                return this.responseOffTopic(intent.message);
+            case this.QUESTION_TYPE.IDENTITY:
+                return this.responseIdentity();
 
+            case this.QUESTION_TYPE.PLATFORM:
+                return this.responsePlatform();
+
+            case this.QUESTION_TYPE.DSL:
+                return this.responseDSL(message);
+
+            case this.QUESTION_TYPE.ERROR:
+                return this.responseError();
+
+            case this.QUESTION_TYPE.FORBIDDEN:
+                return this.responseForbidden();
+
+            case this.QUESTION_TYPE.OFF_TOPIC:
+                return this.responseOffTopic();
+
+            case this.QUESTION_TYPE.UNKNOWN:
             default:
-                return 'Desculpe, não entendi. Pode reformular?';
+                return this.responseUnknown();
         }
     }
 
     /**
-     * 🟢 RESPOSTA: Ensinar linguagem
+     * 🟢 RESPOSTAS FIXAS E APROPRIADAS
      */
-    responseLearnLanguage(language) {
-        if (!language) {
-            return `Qual linguagem você quer aprender? 🤔
 
-Posso te ensinar:
-• Python 🐍
-• JavaScript 💛
-• Java ☕
-• HTML & CSS 🎨
-• E muito mais!
+    responseGreeting() {
+        return `Oi! 👋
 
-É só me dizer qual!`;
-        }
-
-        // Resposta específica por linguagem
-        const teachings = {
-            'Python': {
-                intro: `Olha, aqui no Fire Server a gente não usa Python — usamos uma **DSL própria** 🙂
-
-Mas posso te ensinar Python sim! Python é uma linguagem simples e muito usada pra automação, bots e jogos.`,
-                code: `# Exemplo básico de Python
-print("Olá, mundo!")
-
-# Variáveis
-nome = "João"
-idade = 15
-print(f"Meu nome é {nome} e tenho {idade} anos")
-
-# Função
-def somar(a, b):
-    return a + b
-
-resultado = somar(5, 3)
-print(f"5 + 3 = {resultado}")`,
-                explanation: `**O que esse código faz:**
-• \`print()\` exibe texto na tela
-• Variáveis guardam informações
-• Funções são blocos de código reutilizáveis
-• \`f"..."\` permite inserir variáveis no texto`
-            },
-            'JavaScript': {
-                intro: `Aqui no Fire Server não usamos JavaScript do usuário — só nossa **DSL** 🙂
-
-Mas posso te ensinar JavaScript! É a linguagem da web, usada em sites, apps e jogos.`,
-                code: `// Exemplo básico de JavaScript
-console.log("Olá, mundo!");
-
-// Variáveis
-let nome = "Maria";
-let idade = 16;
-console.log(\`Meu nome é \${nome} e tenho \${idade} anos\`);
-
-// Função
-function somar(a, b) {
-    return a + b;
-}
-
-let resultado = somar(10, 5);
-console.log(\`10 + 5 = \${resultado}\`);`,
-                explanation: `**O que esse código faz:**
-• \`console.log()\` exibe no console do navegador
-• \`let\` declara variáveis
-• Funções são criadas com \`function\`
-• Template strings usam \`\${}\` para inserir variáveis`
-            }
-        };
-
-        const teaching = teachings[language];
-        if (teaching) {
-            return `${teaching.intro}
-
-**Exemplo básico:**
-\`\`\`${language.toLowerCase()}
-${teaching.code}
-\`\`\`
-
-${teaching.explanation}
-
-Quer aprender mais? Posso te explicar loops, condicionais, arrays e muito mais! 🚀`;
-        }
-
-        return `Posso te ensinar ${language} sim! 🎓
-
-Mas é bom saber: aqui no Fire Server usamos uma DSL própria (mais simples que ${language}).
-
-Quer que eu te mostre exemplos de ${language} ou prefere aprender nossa DSL primeiro?`;
+Posso te ajudar a usar o Fire Server ou explicar como a DSL funciona.`;
     }
 
-    /**
-     * 🟢 RESPOSTA: Código pronto
-     */
-    responseRequestCode(specifics) {
-        return `Entendo que você quer um código pronto! 💻
+    responseIdentity() {
+        return `Sou o assistente do Fire Server.
 
-**Como funciona aqui:**
-Eu não crio o código *por você*, mas posso te **ensinar** e dar **exemplos** que você adapta.
-
-**Exemplo: Site pessoal básico**
-\`\`\`dsl
-page inicial
-title "Meu Site"
-
-text bemvindo ("Olá! Bem-vindo ao meu site 👋")
-jump
-
-text sobre ("Sou desenvolvedor e adoro programar!")
-
-button contato ("Entre em Contato" link "mailto:seu@email.com")
-
-divider
-
-text rodape ("Feito com 🔥 Fire Server")
-end
-\`\`\`
-
-**Copie esse código** e personalize:
-• Mude os textos
-• Adicione mais páginas
-• Coloque suas informações
-
-Quer que eu explique alguma parte específica? 🎯`;
+Estou aqui para ajudar você a usar a plataforma e entender a DSL.`;
     }
 
-    /**
-     * 🟢 RESPOSTA: Ajuda com DSL
-     */
-    responseDSLHelp(command) {
+    responsePlatform() {
+        return `O Fire Server é um projeto mantido pela própria equipe do Fire Server.`;
+    }
+
+    responseDSL(message) {
+        // Detectar comando específico
+        const msgLower = message.toLowerCase();
+        
         const dslHelp = {
             'page': {
                 title: '📄 Comando: page',
@@ -335,14 +286,14 @@ Quer que eu explique alguma parte específica? 🎯`;
 title "Minha Primeira Página"
 text msg ("Olá!")
 end`,
-                explanation: 'Toda página começa com `page` e termina com `end`. O nome deve ser único!'
+                description: 'Toda página começa com `page` e termina com `end`. O nome deve ser único!'
             },
             'text': {
                 title: '📝 Comando: text',
-                syntax: 'text id ("texto", [loads])',
-                example: `text titulo ("Bem-vindo!", color("#FF6B35"); size("24"))
-text descricao ("Este é meu site")`,
-                explanation: 'Adiciona texto ao site. Você pode estilizar com `color()`, `size()`, `font()`'
+                syntax: 'text id ("texto", loads)',
+                example: `text titulo ("Bem-vindo!")
+text descricao ("Este é meu site", color("#FF6B35"))`,
+                description: 'Adiciona texto ao site. Você pode estilizar com `color()`, `size()`, `font()`'
             },
             'button': {
                 title: '🔘 Comando: button',
@@ -350,13 +301,13 @@ text descricao ("Este é meu site")`,
                 example: `button email ("Email" link "mailto:seu@email.com")
 button github ("GitHub" link "https://github.com")
 button proxima ("Próxima" page outraPagina)`,
-                explanation: 'Cria botões clicáveis. Use `link` para URLs ou `page` para navegar entre páginas'
+                description: 'Cria botões clicáveis. Use `link` para URLs ou `page` para navegar entre páginas'
             },
             'image': {
                 title: '🖼️ Comando: image',
                 syntax: 'image id ("url")',
                 example: `image logo ("https://exemplo.com/logo.png")`,
-                explanation: '⚠️ Máximo de 10 imagens por site! Use URLs públicas (https://)'
+                description: '⚠️ Máximo de 10 imagens por site! Use URLs públicas (https://)'
             },
             'divider': {
                 title: '➖ Comando: divider',
@@ -364,7 +315,7 @@ button proxima ("Próxima" page outraPagina)`,
                 example: `text parte1 ("Primeira parte")
 divider
 text parte2 ("Segunda parte")`,
-                explanation: 'Cria uma linha horizontal separadora'
+                description: 'Cria uma linha horizontal separadora'
             },
             'jump': {
                 title: '⬇️ Comando: jump',
@@ -372,13 +323,23 @@ text parte2 ("Segunda parte")`,
                 example: `text titulo ("Título")
 jump
 text subtitulo ("Subtítulo")`,
-                explanation: 'Pula uma linha, adicionando espaço vertical'
+                description: 'Pula uma linha, adicionando espaço vertical'
+            },
+            'title': {
+                title: '🏷️ Comando: title',
+                syntax: 'title "Título da Página"',
+                example: `page inicial
+title "Meu Site Incrível"`,
+                description: 'Define o título que aparece na aba do navegador'
             }
         };
 
-        const help = dslHelp[command] || dslHelp['page'];
+        // Encontrar comando mencionado
+        const command = Object.keys(dslHelp).find(cmd => msgLower.includes(cmd));
 
-        return `${help.title}
+        if (command && dslHelp[command]) {
+            const help = dslHelp[command];
+            return `${help.title}
 
 **Sintaxe:**
 \`${help.syntax}\`
@@ -388,199 +349,158 @@ text subtitulo ("Subtítulo")`,
 ${help.example}
 \`\`\`
 
-**Explicação:**
-${help.explanation}
+**Descrição:**
+${help.description}
 
 Quer ver mais exemplos ou aprender outro comando? 🚀`;
-    }
+        }
 
-    /**
-     * 🟢 RESPOSTA: Confusão
-     */
-    responseConfusion(topic) {
-        return `Entendo que pode estar confuso! 🤔
+        // Resposta genérica sobre DSL
+        return `**Comandos disponíveis da DSL:**
 
-Vamos simplificar:
+• \`page\` - Cria uma página
+• \`text\` - Adiciona texto
+• \`button\` - Cria botão
+• \`image\` - Adiciona imagem
+• \`divider\` - Linha separadora
+• \`jump\` - Pula linha
+• \`title\` - Título da página
 
-**O Fire Server é uma ferramenta para criar sites simples**
-Você escreve em uma linguagem especial (DSL) e ele transforma em um site bonito.
+Me pergunte sobre um comando específico! 🚀
 
-**Exemplo super simples:**
-\`\`\`dsl
-page inicio
-title "Meu Site"
-text msg ("Olá!")
-end
-\`\`\`
-
-Esse código cria uma página com um texto "Olá!".
-
-**Ficou mais claro?** Me diga o que ainda não entendeu que eu explico melhor! 💡`;
-    }
-
-    /**
-     * 🟢 RESPOSTA: Erro
-     */
-    responseErrorHelp(context) {
-        return `Vejo que você está com um problema! 🐛
-
-**Erros mais comuns:**
-
-1️⃣ **Aspas não fechadas**
-❌ \`text t (Olá)\`
-✅ \`text t ("Olá")\`
-
-2️⃣ **Esqueceu o "end"**
-❌ \`page inicio\ntext t ("hi")\`
-✅ \`page inicio\ntext t ("hi")\nend\`
-
-3️⃣ **Nome duplicado**
-❌ \`text t ("A")\ntext t ("B")\`
-✅ \`text t1 ("A")\ntext t2 ("B")\`
-
-**Qual erro você está tendo?** Cole a mensagem de erro aqui que eu te ajudo! 🔍`;
-    }
-
-    /**
-     * 🟢 RESPOSTA: Cumprimento
-     */
-    responseGreeting() {
-        return `Olá! 👋 Como posso te ajudar hoje?
-
-Posso:
-• 📝 Te ensinar a usar a DSL
-• 🐛 Ajudar com erros
-• 💡 Ensinar programação
-• 🎨 Dar exemplos de sites
-
-É só me dizer o que precisa! 😊`;
-    }
-
-    /**
-     * 🟢 RESPOSTA: Fora do tópico
-     */
-    responseOffTopic(message) {
-        return `Hmm, não tenho certeza como te ajudar com isso... 🤔
-
-Sou especialista em:
-• 🔥 Fire Server e sua DSL
-• 💻 Programação (Python, JavaScript, etc)
-• 🎨 Criação de sites
-
-Quer conversar sobre algum desses temas? Ou tem alguma dúvida sobre o Fire Server?`;
-    }
-
-    /**
-     * Base de conhecimento (mantida para busca direta)
-     */
-    buildKnowledgeBase() {
-        return {
-            limits: `⚠️ **Limites do Fire Server:**
-
-• Máximo de 200 linhas de código
-• Máximo de 100 elementos renderizados
-• Máximo de 10 imagens por site
-• Máximo de 10.000 caracteres
-
-Se ultrapassar, simplifique seu site ou divida em mais páginas!`,
-
-            examples: `🎨 **Exemplos de sites:**
-
-**1. Site Pessoal:**
+**Exemplo básico:**
 \`\`\`dsl
 page inicial
-title "João Silva"
-text intro ("Desenvolvedor Web 💻")
-button github ("GitHub" link "https://github.com/joao")
+title "Meu Site"
+text bemvindo ("Olá! Bem-vindo 👋")
 end
-\`\`\`
+\`\`\``;
+    }
 
-**2. Links Bio:**
-\`\`\`dsl
-page links
-title "Meus Links"
-text nome ("@meuuser")
-button insta ("Instagram" link "https://instagram.com/...")
-button twitter ("Twitter" link "https://twitter.com/...")
-end
-\`\`\``
-        };
+    responseError() {
+        return `**Erros comuns e soluções:**
+
+1. **"Falta end"** 
+   → Toda página precisa terminar com \`end\`
+
+2. **"Aspas não fechadas"** 
+   → Sempre use aspas duplas: \`"texto"\`
+
+3. **"Comando não reconhecido"** 
+   → Verifique a sintaxe no guia
+
+4. **"Muitas imagens"** 
+   → Máximo de 10 imagens por site
+
+5. **"Nome duplicado"** 
+   → IDs de elementos devem ser únicos
+
+Me diga qual erro você está tendo para eu ajudar melhor! 🐛`;
+    }
+
+    responseForbidden() {
+        return `Não posso ajudar com compras, moedas virtuais ou assuntos desse tipo.
+
+Se quiser, posso ajudar com o Fire Server ou explicar como criar seu site 🙂`;
+    }
+
+    responseOffTopic() {
+        return `Não ensino outras linguagens de programação aqui.
+
+Posso te ajudar com:
+• Como usar a DSL do Fire Server
+• Entender erros do editor
+• Exemplos de páginas
+
+É só me dizer o que você quer fazer no Fire Server! 🔥`;
+    }
+
+    responseUnknown() {
+        return `Não entendi muito bem 🤔
+
+Posso te ajudar com:
+• Como usar a DSL
+• Entender erros do editor
+• Exemplos de páginas
+
+É só me dizer o que você quer fazer no Fire Server.`;
     }
 
     /**
      * Adiciona mensagem ao chat
      */
-    addMessage(type, message) {
-        const chatContainer = document.getElementById('aiChat');
+    addMessage(sender, text) {
+        const chatMessages = document.getElementById('aiMessages');
+        if (!chatMessages) return;
+
         const messageDiv = document.createElement('div');
-        messageDiv.className = `chat-message ${type}-message`;
+        messageDiv.className = `ai-message ${sender}`;
 
-        // Processar markdown simples e blocos de código
-        const processedMessage = this.processMessage(message);
-        messageDiv.innerHTML = processedMessage;
+        // Processar markdown básico
+        const processedText = this.processMarkdown(text);
+        messageDiv.innerHTML = processedText;
 
-        chatContainer.appendChild(messageDiv);
-        chatContainer.scrollTop = chatContainer.scrollHeight;
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
 
-        this.chatHistory.push({ type, message, timestamp: Date.now() });
+        // Salvar no histórico
+        this.chatHistory.push({ sender, text, timestamp: Date.now() });
     }
 
     /**
-     * Processa mensagem (markdown e código)
+     * Processa markdown básico
      */
-    processMessage(message) {
-        // Processar blocos de código com botão copiar
-        message = message.replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => {
-            const codeId = 'code-' + Date.now() + Math.random();
+    processMarkdown(text) {
+        // Blocos de código
+        text = text.replace(/```(\w+)?\n([\s\S]+?)```/g, (match, lang, code) => {
             return `<div class="code-block">
-                ${lang ? `<div class="code-lang">${lang}</div>` : ''}
-                <pre><code id="${codeId}">${this.escapeHtml(code.trim())}</code></pre>
-                <button class="copy-code-btn" onclick="window.aiAssistant.copyCode('${codeId}')">📋 Copiar</button>
+                <div class="code-lang">${lang || 'code'}</div>
+                <pre><code>${this.escapeHtml(code.trim())}</code></pre>
             </div>`;
         });
 
-        // Processar código inline
-        message = message.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
+        // Código inline
+        text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
 
-        // Processar negrito
-        message = message.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+        // Negrito
+        text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
 
-        // Processar quebras de linha
-        message = message.replace(/\n/g, '<br>');
+        // Quebras de linha
+        text = text.replace(/\n/g, '<br>');
 
-        return message;
+        return text;
     }
 
     /**
-     * Copia código para clipboard
-     */
-    copyCode(codeId) {
-        const codeElement = document.getElementById(codeId);
-        if (codeElement) {
-            navigator.clipboard.writeText(codeElement.textContent);
-            // Feedback visual
-            const btns = document.querySelectorAll('.copy-code-btn');
-            btns.forEach(btn => {
-                if (btn.onclick.toString().includes(codeId)) {
-                    const originalText = btn.textContent;
-                    btn.textContent = '✅ Copiado!';
-                    setTimeout(() => {
-                        btn.textContent = originalText;
-                    }, 2000);
-                }
-            });
-        }
-    }
-
-    /**
-     * Escapa HTML para segurança
+     * Escapa HTML
      */
     escapeHtml(text) {
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
     }
+
+    /**
+     * Limpa histórico
+     */
+    clearHistory() {
+        this.chatHistory = [];
+        const chatMessages = document.getElementById('aiMessages');
+        if (chatMessages) {
+            chatMessages.innerHTML = '';
+            this.addMessage('ai', this.getWelcomeMessage());
+        }
+    }
 }
 
-// Instância global (necessária para o botão de copiar)
-let aiAssistant;
+// Inicializar quando o DOM estiver pronto
+if (typeof document !== 'undefined') {
+    document.addEventListener('DOMContentLoaded', () => {
+        window.fireAssistant = new FireAssistant();
+    });
+}
+
+// Export para módulos
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = FireAssistant;
+}
