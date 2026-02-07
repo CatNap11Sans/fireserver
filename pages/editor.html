@@ -65,24 +65,12 @@
                     </label>
                 </div>
 
-<div id="aiModal" class="ai-modal">
-    <div class="ai-modal-content">
-        <button id="closeAiModal" class="close-btn">×</button>
-        <h3>🤖 Assistente IA</h3>
-        
-        <div id="aiMessages" class="ai-messages">
-        </div>
-        
-        <div class="ai-input-group">
-            <input 
-                type="text" 
-                id="aiInput" 
-                placeholder="Digite sua pergunta..."
-            />
-            <button id="sendAiBtn">Enviar</button>
-        </div>
-    </div>
-</div>
+                <div class="sidebar-section">
+                    <h3>🤖 Assistente IA</h3>
+                    <button class="btn-ai" id="aiHelpBtn">Pedir Ajuda</button>
+                    <p class="ai-hint">A IA pode explicar erros e sugerir correções</p>
+                </div>
+                
                 <div class="sidebar-section">
                     <h3>📚 Atalhos</h3>
                     <div class="shortcuts">
@@ -183,22 +171,28 @@
         </div>
     </div>
 
-    <!-- AI Assistant Modal -->
-    <div class="modal" id="aiModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>🤖 Assistente IA</h2>
-                <button class="modal-close" id="closeAiModal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="chat-container" id="aiChat"></div>
-                <div class="chat-input">
-                    <input type="text" id="aiInput" placeholder="Faça uma pergunta sobre seu código...">
-                    <button class="btn-send" id="sendAiBtn">Enviar</button>
-                </div>
-            </div>
+<!-- Modal do Assistente -->
+<div id="aiModal" class="ai-modal">
+    <div class="ai-modal-content">
+        <button id="closeAiModal" class="close-btn">×</button>
+        <h3>🤖 Assistente IA</h3>
+        
+        <!-- Container de mensagens -->
+        <div id="aiMessages" class="ai-messages">
+            <!-- Mensagens aparecem aqui -->
+        </div>
+        
+        <!-- Input -->
+        <div class="ai-input-group">
+            <input 
+                type="text" 
+                id="aiInput" 
+                placeholder="Digite sua pergunta..."
+            />
+            <button id="sendAiBtn">Enviar</button>
         </div>
     </div>
+</div>
 
     <!-- Notification Toast -->
     <div class="toast" id="toast"></div>
