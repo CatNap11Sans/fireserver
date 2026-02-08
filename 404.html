@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fire Server</title>
+    <script>
+        // Roteamento simples para GitHub Pages
+        // fireserver.io/usuario → viewer.html?user=usuario
+        const path = location.pathname.slice(1);
+        if (path) {
+            location.replace("/pages/viewer.html?user=" + path);
+        } else {
+            location.replace("/");
+        }
+    </script>
+</head>
+<body>
+    <p>Redirecionando...</p>
+</body>
+</html>

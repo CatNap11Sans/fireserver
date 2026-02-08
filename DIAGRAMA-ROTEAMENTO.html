@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagrama de Roteamento - Fire Server</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #0A0E27 0%, #151A35 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            max-width: 900px;
+            width: 100%;
+        }
+        
+        h1 {
+            color: #FF6B35;
+            text-align: center;
+            margin-bottom: 3rem;
+            font-size: 2.5rem;
+        }
+        
+        .flow-diagram {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+        
+        .step {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            position: relative;
+            transition: all 0.3s;
+        }
+        
+        .step:hover {
+            transform: translateX(10px);
+            border-color: #FF6B35;
+            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.2);
+        }
+        
+        .step-number {
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background: linear-gradient(135deg, #FF6B35, #F7931E);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 1.2rem;
+        }
+        
+        .step-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #4ECDC4;
+        }
+        
+        .step-description {
+            color: #A0A8C5;
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+        
+        .code-block {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            color: #FFD93D;
+            border-left: 4px solid #FF6B35;
+            margin: 0.5rem 0;
+        }
+        
+        .arrow {
+            text-align: center;
+            font-size: 3rem;
+            color: #FF6B35;
+            animation: bounce 2s ease-in-out infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .example {
+            background: rgba(78, 205, 196, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #4ECDC4;
+            margin-top: 1rem;
+        }
+        
+        .example-title {
+            font-weight: 600;
+            color: #4ECDC4;
+            margin-bottom: 0.5rem;
+        }
+        
+        .success-box {
+            background: rgba(76, 175, 80, 0.2);
+            border: 2px solid #4CAF50;
+            padding: 2rem;
+            border-radius: 16px;
+            text-align: center;
+            margin-top: 2rem;
+        }
+        
+        .success-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        
+        .success-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .legend {
+            margin-top: 3rem;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+        }
+        
+        .legend-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #4ECDC4;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 0.5rem 0;
+            color: #A0A8C5;
+        }
+        
+        .legend-color {
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔀 Fluxo de Roteamento - Fire Server</h1>
+        
+        <div class="flow-diagram">
+            <!-- Step 1 -->
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-title">👤 Usuário Acessa a URL</div>
+                <div class="step-description">
+                    O usuário digita ou clica em um link para o site Fire Server de alguém
+                </div>
+                <div class="code-block">
+                    https://fireserver.io/joao
+                </div>
+                <div class="example">
+                    <div class="example-title">Exemplo:</div>
+                    Usuário quer ver o site do João, então acessa: <code>fireserver.io/joao</code>
+                </div>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <!-- Step 2 -->
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-title">🌐 GitHub Pages Procura o Arquivo</div>
+                <div class="step-description">
+                    O servidor do GitHub Pages tenta encontrar o arquivo correspondente
+                </div>
+                <div class="code-block">
+                    Procurando: /joao/index.html<br>
+                    Resultado: ❌ Arquivo não encontrado
+                </div>
+                <div class="example">
+                    <div class="example-title">Por quê não encontra?</div>
+                    Porque não existe uma pasta <code>/joao/</code> com um arquivo <code>index.html</code> dentro
+                </div>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <!-- Step 3 -->
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-title">🔴 404.html é Acionado Automaticamente</div>
+                <div class="step-description">
+                    Quando um arquivo não é encontrado, o GitHub Pages automaticamente serve o arquivo <code>404.html</code>
+                </div>
+                <div class="code-block">
+                    GitHub Pages: "Arquivo não existe, vou servir 404.html"
+                </div>
+                <div class="example">
+                    <div class="example-title">Mágica do GitHub Pages:</div>
+                    Isso é um comportamento padrão! Todo arquivo não encontrado → <code>404.html</code>
+                </div>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <!-- Step 4 -->
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-title">📝 Script do 404.html Processa o Path</div>
+                <div class="step-description">
+                    O JavaScript dentro do <code>404.html</code> extrai o username da URL
+                </div>
+                <div class="code-block">
+                    const path = location.pathname.slice(1);<br>
+                    // path = "joao"<br>
+                    <br>
+                    if (path) {<br>
+                    &nbsp;&nbsp;location.replace("/pages/viewer.html?user=" + path);<br>
+                    }
+                </div>
+                <div class="example">
+                    <div class="example-title">O que faz:</div>
+                    1. <code>location.pathname</code> retorna: <code>"/joao"</code><br>
+                    2. <code>.slice(1)</code> remove a barra: <code>"joao"</code><br>
+                    3. Redireciona para: <code>/pages/viewer.html?user=joao</code>
+                </div>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <!-- Step 5 -->
+            <div class="step">
+                <div class="step-number">5</div>
+                <div class="step-title">🔀 Redirecionamento Acontece</div>
+                <div class="step-description">
+                    O navegador é redirecionado para a página do viewer com o username como parâmetro
+                </div>
+                <div class="code-block">
+                    Redirecionando para:<br>
+                    https://fireserver.io/pages/viewer.html?user=joao
+                </div>
+                <div class="example">
+                    <div class="example-title">Transparente para o usuário:</div>
+                    O redirecionamento acontece tão rápido que o usuário nem percebe!
+                </div>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <!-- Step 6 -->
+            <div class="step">
+                <div class="step-number">6</div>
+                <div class="step-title">👁️ Viewer.html Extrai o Username</div>
+                <div class="step-description">
+                    O <code>viewer.html</code> lê o parâmetro <code>user</code> da URL
+                </div>
+                <div class="code-block">
+                    extractUsername() {<br>
+                    &nbsp;&nbsp;const params = new URLSearchParams(location.search);<br>
+                    &nbsp;&nbsp;return params.get('user');<br>
+                    }<br>
+                    <br>
+                    // Retorna: "joao"
+                </div>
+                <div class="example">
+                    <div class="example-title">Query String:</div>
+                    <code>?user=joao</code> é a forma padrão de passar dados na URL
+                </div>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <!-- Step 7 -->
+            <div class="step">
+                <div class="step-number">7</div>
+                <div class="step-title">💾 Busca o Código DSL do Usuário</div>
+                <div class="step-description">
+                    Com o username em mãos, busca o código DSL (por enquanto no localStorage, depois no backend)
+                </div>
+                <div class="code-block">
+                    const code = localStorage.getItem(`fire_site_joao`);<br>
+                    // Ou futuro:<br>
+                    // const response = await fetch(`/api/site/joao`);
+                </div>
+                <div class="example">
+                    <div class="example-title">Próxima fase:</div>
+                    Quando o backend estiver pronto, vai buscar do servidor em vez do localStorage
+                </div>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <!-- Step 8 -->
+            <div class="step">
+                <div class="step-number">8</div>
+                <div class="step-title">⚙️ Parser Processa o Código DSL</div>
+                <div class="step-description">
+                    O DSLParser lê e valida o código DSL, transformando em uma AST (Abstract Syntax Tree)
+                </div>
+                <div class="code-block">
+                    const parser = new DSLParser();<br>
+                    const result = parser.parse(code);<br>
+                    // result.ast contém a estrutura do site
+                </div>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <!-- Step 9 -->
+            <div class="step">
+                <div class="step-number">9</div>
+                <div class="step-title">🎨 Renderer Cria o DOM</div>
+                <div class="step-description">
+                    O DSLRenderer transforma a AST em elementos HTML reais de forma segura
+                </div>
+                <div class="code-block">
+                    const renderer = new DSLRenderer();<br>
+                    const container = document.getElementById('siteContainer');<br>
+                    renderer.render(result.ast, container);
+                </div>
+                <div class="example">
+                    <div class="example-title">Segurança:</div>
+                    Usa apenas <code>createElement()</code>, nunca <code>innerHTML</code> para evitar XSS
+                </div>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <!-- Success -->
+            <div class="success-box">
+                <div class="success-icon">🎉</div>
+                <div class="success-title">Site Exibido!</div>
+                <div>O site do usuário está agora visível e funcionando perfeitamente!</div>
+            </div>
+        </div>
+        
+        <!-- Legend -->
+        <div class="legend">
+            <div class="legend-title">🎨 Legenda de Cores</div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #FF6B35, #F7931E);"></div>
+                <span>Ação do usuário ou automática</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #4ECDC4;"></div>
+                <span>Processamento de código</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: rgba(255, 255, 255, 0.05);"></div>
+                <span>Etapas do sistema</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: rgba(76, 175, 80, 0.3);"></div>
+                <span>Resultado final</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
