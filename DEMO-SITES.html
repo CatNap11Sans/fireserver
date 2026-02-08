@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo - Fire Server</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0A0E27 0%, #151A35 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .demo-container {
+            background: white;
+            border-radius: 16px;
+            padding: 3rem;
+            max-width: 800px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #0A0E27;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .fire-emoji {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            color: #666;
+            font-size: 1.1rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .demo-list {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .demo-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .demo-info h3 {
+            color: #0A0E27;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .demo-info span {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, #FF6B35, #F7931E);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.4);
+        }
+
+        .btn-secondary {
+            background: #0A0E27;
+            margin-left: 0.5rem;
+        }
+
+        .btn-secondary:hover {
+            background: #151A35;
+        }
+
+        .instructions {
+            background: #fff3e0;
+            border-left: 4px solid #FF6B35;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 2rem;
+        }
+
+        .instructions h4 {
+            color: #FF6B35;
+            margin-bottom: 1rem;
+        }
+
+        .instructions ol {
+            margin-left: 1.5rem;
+            color: #666;
+        }
+
+        .instructions li {
+            margin-bottom: 0.5rem;
+        }
+
+        .success-msg {
+            display: none;
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <div class="fire-emoji">🔥</div>
+        <h1>Demonstração Fire Server</h1>
+        <p>Crie sites de exemplo e veja como funcionam!</p>
+
+        <div class="demo-list">
+            <div class="demo-item">
+                <div class="demo-info">
+                    <h3>Site Pessoal</h3>
+                    <span>@exemplo - Portfolio minimalista</span>
+                </div>
+                <button class="btn" onclick="createExampleSite('exemplo')">Criar & Ver</button>
+            </div>
+
+            <div class="demo-item">
+                <div class="demo-info">
+                    <h3>Links Bio</h3>
+                    <span>@links - Página de links estilo Linktree</span>
+                </div>
+                <button class="btn" onclick="createBioLinksSite('links')">Criar & Ver</button>
+            </div>
+
+            <div class="demo-item">
+                <div class="demo-info">
+                    <h3>Site Customizado</h3>
+                    <span>Crie seu próprio site no editor</span>
+                </div>
+                <a href="pages/editor.html" class="btn">Ir para Editor</a>
+            </div>
+        </div>
+
+        <div id="successMsg" class="success-msg"></div>
+
+        <div class="instructions">
+            <h4>📝 Como usar:</h4>
+            <ol>
+                <li>Clique em "Criar & Ver" em um dos exemplos acima</li>
+                <li>O site será criado automaticamente e aberto</li>
+                <li>Você pode acessar depois em: <code>pages/viewer.html?user=exemplo</code></li>
+                <li>Para criar seu próprio site, use o Editor</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        // Site de exemplo pessoal
+        function createExampleSite(username) {
+            const code = `page inicial
+title "Meu Portfolio"
+
+text titulo ("João Silva", color("#FF6B35"); size("32"))
+jump
+
+text subtitulo ("Desenvolvedor Web Full Stack", color("#666"); size("18"))
+jump
+jump
+
+divider
+
+jump
+text sobre ("👋 Olá! Sou desenvolvedor apaixonado por criar experiências digitais incríveis.")
+jump
+
+text stack ("💻 Stack: React, Node.js, Python")
+jump
+jump
+
+button github ("GitHub" link "https://github.com")
+button linkedin ("LinkedIn" link "https://linkedin.com")
+button email ("Email" link "mailto:contato@exemplo.com")
+
+jump
+divider
+jump
+
+text rodape ("Feito com 🔥 Fire Server", color("#999"); size("14"))
+
+end`;
+
+            saveAndOpen(username, code);
+        }
+
+        // Site de bio links
+        function createBioLinksSite(username) {
+            const code = `page links
+title "Meus Links"
+
+jump
+text nome ("@meuperfil", color("#FF6B35"); size("28"))
+jump
+
+text bio ("🎨 Designer & Criador de Conteúdo", color("#666"))
+jump
+jump
+
+button instagram ("📸 Instagram" link "https://instagram.com")
+button youtube ("🎥 YouTube" link "https://youtube.com")
+button twitter ("🐦 Twitter" link "https://twitter.com")
+button portfolio ("🌐 Portfolio" link "https://meusite.com")
+button loja ("🛍️ Minha Loja" link "https://loja.com")
+
+jump
+jump
+divider
+jump
+
+text rodape ("Fire Server - Crie seu site grátis 🔥", color("#999"); size("12"))
+
+end`;
+
+            saveAndOpen(username, code);
+        }
+
+        // Salvar no localStorage e abrir
+        function saveAndOpen(username, code) {
+            // Salvar no localStorage
+            localStorage.setItem(`fire_site_${username}`, code);
+            
+            // Mostrar mensagem de sucesso
+            const msg = document.getElementById('successMsg');
+            msg.style.display = 'block';
+            msg.textContent = `✅ Site @${username} criado com sucesso! Abrindo...`;
+            
+            // Abrir o viewer
+            setTimeout(() => {
+                window.location.href = `pages/viewer.html?user=${username}`;
+            }, 1000);
+        }
+
+        // Limpar sites antigos ao carregar
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('🔥 Fire Server Demo carregado!');
+        });
+    </script>
+</body>
+</html>

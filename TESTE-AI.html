@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste da IA - Fire Server</title>
+    <link rel="stylesheet" href="css/editor.css">
+    <style>
+        body {
+            padding: 2rem;
+            overflow: auto;
+        }
+        
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: var(--fire-orange);
+            margin-bottom: 2rem;
+        }
+        
+        .test-section {
+            background: var(--dark-card);
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+        }
+        
+        .test-section h2 {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+        
+        .test-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .test-btn {
+            background: linear-gradient(135deg, var(--fire-orange), var(--fire-red));
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .test-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 53, 0.4);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+        }
+        
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .explanation {
+            background: rgba(76, 205, 196, 0.1);
+            border-left: 4px solid #4ECDC4;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🤖 Teste da IA v2.0 - Fire Server</h1>
+        
+        <div class="test-section">
+            <h2>🎯 O que testar?</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                Esta IA usa um sistema de INTENÇÕES, não keywords secas. Ela entende o que você está TENTANDO fazer.
+            </p>
+            <div class="explanation">
+                <strong>Sistema Antigo (ruim):</strong> "Se contém 'python' → responde X"<br>
+                <strong>Sistema Novo (bom):</strong> "O que o usuário quer? → Aprende Python → Ensina com empatia"
+            </div>
+        </div>
+        
+        <!-- Teste 1: Ensinar Linguagem -->
+        <div class="test-section">
+            <h2>🐍 Teste 1: Ensinar Linguagem</h2>
+            <p style="color: var(--text-secondary);">
+                A IA deve reconhecer que você quer aprender uma linguagem, dar contexto do Fire Server, 
+                e AINDA ASSIM ensinar a linguagem pedida com exemplos copiáveis.
+            </p>
+            <div class="test-buttons">
+                <button class="test-btn" onclick="sendTestMessage('me ensina python')">
+                    me ensina python
+                </button>
+                <button class="test-btn" onclick="sendTestMessage('como aprender javascript')">
+                    como aprender javascript
+                </button>
+                <button class="test-btn" onclick="sendTestMessage('tutorial de java')">
+                    tutorial de java
+                </button>
+            </div>
+            <div class="explanation">
+                <strong>Esperado:</strong> "Aqui não usamos Python, mas posso te ensinar sim!" + exemplo com botão copiar
+            </div>
+        </div>
+        
+        <!-- Teste 2: Código Pronto -->
+        <div class="test-section">
+            <h2>💻 Teste 2: Pedir Código Pronto</h2>
+            <p style="color: var(--text-secondary);">
+                A IA NÃO deve criar código por você, mas deve dar exemplos que você pode adaptar.
+            </p>
+            <div class="test-buttons">
+                <button class="test-btn" onclick="sendTestMessage('cria um codigo de site pra mim')">
+                    cria um codigo de site pra mim
+                </button>
+                <button class="test-btn" onclick="sendTestMessage('faz um site')">
+                    faz um site
+                </button>
+                <button class="test-btn" onclick="sendTestMessage('me da um codigo pronto')">
+                    me da um codigo pronto
+                </button>
+            </div>
+            <div class="explanation">
+                <strong>Esperado:</strong> Dá exemplo adaptável + explica que deve personalizar
+            </div>
+        </div>
+        
+        <!-- Teste 3: Ajuda DSL -->
+        <div class="test-section">
+            <h2>📝 Teste 3: Ajuda com DSL</h2>
+            <p style="color: var(--text-secondary);">
+                A IA deve dar sintaxe + exemplo + explicação clara
+            </p>
+            <div class="test-buttons">
+                <button class="test-btn" onclick="sendTestMessage('como usar page')">
+                    como usar page
+                </button>
+                <button class="test-btn" onclick="sendTestMessage('o que é text')">
+                    o que é text
+                </button>
+                <button class="test-btn" onclick="sendTestMessage('como fazer button')">
+                    como fazer button
+                </button>
+            </div>
+            <div class="explanation">
+                <strong>Esperado:</strong> Sintaxe + exemplo em DSL + explicação com emojis
+            </div>
+        </div>
+        
+        <!-- Teste 4: Confusão -->
+        <div class="test-section">
+            <h2>🤔 Teste 4: Confusão</h2>
+            <p style="color: var(--text-secondary);">
+                A IA deve simplificar e dar exemplo básico
+            </p>
+            <div class="test-buttons">
+                <button class="test-btn" onclick="sendTestMessage('não entendi')">
+                    não entendi
+                </button>
+                <button class="test-btn" onclick="sendTestMessage('o que é isso')">
+                    o que é isso
+                </button>
+                <button class="test-btn" onclick="sendTestMessage('estou confuso')">
+                    estou confuso
+                </button>
+            </div>
+            <div class="explanation">
+                <strong>Esperado:</strong> Simplifica + explica o básico + exemplo super simples
+            </div>
+        </div>
+        
+        <!-- Teste 5: Erro -->
+        <div class="test-section">
+            <h2>🐛 Teste 5: Erro ou Problema</h2>
+            <p style="color: var(--text-secondary);">
+                A IA deve listar erros comuns e dar soluções
+            </p>
+            <div class="test-buttons">
+                <button class="test-btn" onclick="sendTestMessage('erro')">
+                    erro
+                </button>
+                <button class="test-btn" onclick="sendTestMessage('não funciona')">
+                    não funciona
+                </button>
+                <button class="test-btn" onclick="sendTestMessage('deu bug')">
+                    deu bug
+                </button>
+            </div>
+            <div class="explanation">
+                <strong>Esperado:</strong> Lista top 3 erros + soluções com ❌ e ✅
+            </div>
+        </div>
+        
+        <!-- Teste 6: Cumprimento -->
+        <div class="test-section">
+            <h2>👋 Teste 6: Cumprimento</h2>
+            <p style="color: var(--text-secondary);">
+                A IA deve cumprimentar e listar como pode ajudar
+            </p>
+            <div class="test-buttons">
+                <button class="test-btn" onclick="sendTestMessage('oi')">
+                    oi
+                </button>
+                <button class="test-btn" onclick="sendTestMessage('olá')">
+                    olá
+                </button>
+                <button class="test-btn" onclick="sendTestMessage('bom dia')">
+                    bom dia
+                </button>
+            </div>
+            <div class="explanation">
+                <strong>Esperado:</strong> Cumprimento amigável + lista de ajudas disponíveis
+            </div>
+        </div>
+        
+        <!-- Teste 7: Off-topic -->
+        <div class="test-section">
+            <h2>❓ Teste 7: Fora do Tópico</h2>
+            <p style="color: var(--text-secondary);">
+                A IA deve redirecionar educadamente para temas relevantes
+            </p>
+            <div class="test-buttons">
+                <button class="test-btn" onclick="sendTestMessage('qual a capital do brasil')">
+                    qual a capital do brasil
+                </button>
+                <button class="test-btn" onclick="sendTestMessage('conta uma piada')">
+                    conta uma piada
+                </button>
+            </div>
+            <div class="explanation">
+                <strong>Esperado:</strong> "Não sei sobre isso, mas posso ajudar com..."
+            </div>
+        </div>
+        
+        <!-- Botão para abrir modal -->
+        <div class="test-section">
+            <h2>🚀 Testar Agora!</h2>
+            <button class="test-btn" onclick="openAI()">
+                Abrir Chat da IA
+            </button>
+        </div>
+    </div>
+    
+    <!-- Modal da IA -->
+    <div class="modal" id="aiModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🤖 Assistente IA</h2>
+                <button class="modal-close" id="closeAiModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="chat-container" id="aiChat"></div>
+                <div class="chat-input">
+                    <input type="text" id="aiInput" placeholder="Faça uma pergunta...">
+                    <button class="btn-send" id="sendAiBtn">Enviar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="js/ai-assistant.js"></script>
+    <script>
+        // Inicializar IA
+        document.addEventListener('DOMContentLoaded', () => {
+            window.aiAssistant = new AIAssistant();
+        });
+        
+        // Abrir modal
+        function openAI() {
+            document.getElementById('aiModal').classList.add('active');
+        }
+        
+        // Enviar mensagem de teste
+        function sendTestMessage(message) {
+            openAI();
+            setTimeout(() => {
+                const input = document.getElementById('aiInput');
+                input.value = message;
+                window.aiAssistant.handleUserMessage();
+            }, 300);
+        }
+    </script>
+</body>
+</html>
