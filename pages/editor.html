@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editor - Fire Server</title>
+    <link rel="stylesheet" href="../css/editor.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/material-darker.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="editor-container">
+        <!-- Header -->
+        <header class="editor-header">
+            <div class="header-left">
+                <a href="../index.html" class="logo">🔥 Fire Server</a>
+                <span class="username" id="currentUsername"></span>
+            </div>
+            <div class="header-center">
+                <div class="status-indicator">
+                    <span class="status-dot" id="statusDot"></span>
+                    <span class="status-text" id="statusText">Não salvo</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="btn-icon" id="toggleTheme" title="Alternar tema">
+                    <span id="themeIcon">🌙</span>
+                </button>
+                <button class="btn-secondary" id="saveBtn">💾 Salvar</button>
+                <button class="btn-primary" id="publishBtn">🚀 Publicar</button>
+            </div>
+        </header>
+
+        <!-- Main Editor Area -->
+        <div class="editor-main">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="sidebar-section">
+                    <h3>📝 Arquivo</h3>
+                    <div class="file-info">
+                        <p class="filename">site.dsl</p>
+                        <p class="file-stats">
+                            <span id="lineCount">0</span> linhas • 
+                            <span id="charCount">0</span> caracteres
+                        </p>
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3>⚙️ Configurações</h3>
+                    <label class="toggle-option">
+                        <input type="checkbox" id="autoSave" checked>
+                        <span>Auto-salvar</span>
+                    </label>
+                    <label class="toggle-option">
+                        <input type="checkbox" id="livePreview" checked>
+                        <span>Preview ao vivo</span>
+                    </label>
+                    <label class="toggle-option">
+                        <input type="checkbox" id="showLineNumbers" checked>
+                        <span>Números de linha</span>
+                    </label>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3>🤖 Assistente IA</h3>
+                    <button class="btn-ai" id="aiHelpBtn">Pedir Ajuda</button>
+                    <p class="ai-hint">A IA pode explicar erros e sugerir correções</p>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3>📚 Atalhos</h3>
+                    <div class="shortcuts">
+                        <div class="shortcut">
+                            <span>Salvar</span>
+                            <kbd>Ctrl+S</kbd>
+                        </div>
+                        <div class="shortcut">
+                            <span>Publicar</span>
+                            <kbd>Ctrl+Enter</kbd>
+                        </div>
+                        <div class="shortcut">
+                            <span>Ajuda IA</span>
+                            <kbd>Ctrl+H</kbd>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Editor Panel -->
+            <div class="editor-panel">
+                <div class="panel-tabs">
+                    <button class="tab active" data-tab="editor">
+                        <span>📄</span> Editor
+                    </button>
+                    <button class="tab" data-tab="preview">
+                        <span>👁️</span> Preview
+                    </button>
+                    <button class="tab" data-tab="output">
+                        <span>📤</span> Output
+                    </button>
+                </div>
+
+                <div class="panel-content">
+                    <!-- Editor Tab -->
+                    <div class="tab-content active" id="editorTab">
+                        <div class="editor-toolbar">
+                            <button class="toolbar-btn" id="newPageBtn" title="Nova página">
+                                <span>📄</span> Nova Página
+                            </button>
+                            <button class="toolbar-btn" id="addTextBtn" title="Adicionar texto">
+                                <span>📝</span> Texto
+                            </button>
+                            <button class="toolbar-btn" id="addImageBtn" title="Adicionar imagem">
+                                <span>🖼️</span> Imagem
+                            </button>
+                            <button class="toolbar-btn" id="addButtonBtn" title="Adicionar botão">
+                                <span>🔘</span> Botão
+                            </button>
+                        </div>
+                        <div id="codeEditor"></div>
+                        <div class="error-panel" id="errorPanel"></div>
+                    </div>
+
+                    <!-- Preview Tab -->
+                    <div class="tab-content" id="previewTab">
+                        <div class="preview-controls">
+                            <button class="device-btn active" data-device="desktop">🖥️ Desktop</button>
+                            <button class="device-btn" data-device="tablet">📱 Tablet</button>
+                            <button class="device-btn" data-device="mobile">📱 Mobile</button>
+                        </div>
+                        <div class="preview-container">
+                            <iframe id="previewFrame" sandbox="allow-same-origin"></iframe>
+                        </div>
+                    </div>
+
+                    <!-- Output Tab -->
+                    <div class="tab-content" id="outputTab">
+                        <div class="output-info">
+                            <h3>🎉 Seu site está pronto!</h3>
+                            <div class="url-display">
+                                <input type="text" id="siteUrl" readonly>
+                                <button class="btn-copy" id="copyUrlBtn">📋 Copiar</button>
+                            </div>
+                            <div class="share-buttons">
+                                <button class="share-btn">🐦 Twitter</button>
+                                <button class="share-btn">📘 Facebook</button>
+                                <button class="share-btn">💼 LinkedIn</button>
+                            </div>
+                            <div class="output-stats">
+                                <div class="stat-box">
+                                    <div class="stat-value" id="totalElements">0</div>
+                                    <div class="stat-label">Elementos</div>
+                                </div>
+                                <div class="stat-box">
+                                    <div class="stat-value" id="totalPages">0</div>
+                                    <div class="stat-label">Páginas</div>
+                                </div>
+                                <div class="stat-box">
+                                    <div class="stat-value" id="totalImages">0</div>
+                                    <div class="stat-label">Imagens</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Assistant Modal -->
+    <div class="modal" id="aiModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🤖 Assistente IA</h2>
+                <button class="modal-close" id="closeAiModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="chat-container" id="aiMessages"></div>
+                <div class="chat-input">
+                    <input type="text" id="aiInput" placeholder="Faça uma pergunta sobre seu código...">
+                    <button class="btn-send" id="sendAiBtn">Enviar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../js/dsl-parser.js"></script>
+    <script src="../js/dsl-renderer.js"></script>
+    <script src="../js/ai-assistant.js"></script>
+    <script src="../js/editor.js"></script>
+</body>
+</html>

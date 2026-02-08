@@ -1,0 +1,38 @@
+{
+  "name": "fire-server",
+  "version": "1.0.0",
+  "description": "Crie sites incríveis sem escrever código complexo - Uma DSL simples e segura para criadores",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npx http-server -p 8080 -o",
+    "dev": "npx live-server --port=8080 --open=index.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/catnap11sans/fireserver.git"
+  },
+  "keywords": [
+    "website-builder",
+    "dsl",
+    "no-code",
+    "site-creator",
+    "beginner-friendly",
+    "web-development",
+    "fire-server"
+  ],
+  "author": "Fire Server Team",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/catnap11sans/fireserver/issues"
+  },
+  "homepage": "https://catnap11sans.github.io/fireserver/",
+  "devDependencies": {
+    "live-server": "^1.2.2",
+    "http-server": "^14.1.1"
+  },
+  "dependencies": {},
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
