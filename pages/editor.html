@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fire Server - Editor</title>
+    <link rel="stylesheet" href="../css/editor.css">
+    <!-- Monaco Editor -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/editor/editor.main.min.css">
+</head>
+<body>
+    <div class="editor-container">
+        <!-- 🟧 Sidebar -->
+        <div class="sidebar">
+            <button class="sidebar-btn" id="toggle-sidebar" title="Fechar barra lateral">
+                <span>☰</span>
+            </button>
+            <button class="sidebar-btn" id="ai-assistant" title="Conversar com IA">
+                <span>🤖</span>
+            </button>
+            <button class="sidebar-btn" id="discord-btn" title="Discord">
+                <span>💬</span>
+            </button>
+            <button class="sidebar-btn" id="back-home" title="Voltar para menu">
+                <span>🏠</span>
+            </button>
+        </div>
+
+        <!-- 🟦 Toolbar -->
+        <div class="toolbar">
+            <button class="toolbar-btn" id="select-mode">
+                <span>👆</span> Selecionar
+            </button>
+            <button class="toolbar-btn" id="move-mode">
+                <span>✋</span> Mover
+            </button>
+            <button class="toolbar-btn" id="scale-mode">
+                <span>↔️</span> Escalonar
+            </button>
+            <div style="flex: 1;"></div>
+            <button class="toolbar-btn success" id="test-btn">
+                <span>▶️</span> Testar
+            </button>
+            <button class="toolbar-btn danger" id="stop-btn">
+                <span>⏹️</span> Parar
+            </button>
+            <button class="toolbar-btn" id="config-btn">
+                <span>⚙️</span> Configurar
+            </button>
+            <button class="toolbar-btn primary" id="save-btn">
+                <span>💾</span> Salvar
+            </button>
+        </div>
+
+        <!-- 🟩 Tabs -->
+        <div class="tabs" id="tabs-container">
+            <div class="tab active" data-tab="preview">
+                <span>📄</span> Preview
+            </div>
+        </div>
+
+        <!-- 🟨 Preview -->
+        <div class="preview" id="preview-area">
+            <div class="preview-loading" id="preview-loading">Carregando preview...</div>
+            <iframe class="preview-frame" id="preview-frame" style="display: none;"></iframe>
+        </div>
+
+        <!-- ⬜ Output -->
+        <div class="output" id="output-console">
+            <div class="output-line info">🔥 Fire Server Editor v1.0</div>
+            <div class="output-line">Console pronto. Execute scripts para ver resultados.</div>
+        </div>
+
+        <!-- 🟪 Explorer -->
+        <div class="explorer">
+            <div class="explorer-header">
+                <span>🌍 Workspace</span>
+                <button class="toolbar-btn" id="add-root" style="padding: 4px 8px; font-size: 12px;">
+                    <span>+</span>
+                </button>
+            </div>
+            <div class="explorer-tree" id="explorer-tree">
+                <div class="tree-item" data-type="Site" data-id="site-root">
+                    <span class="tree-item-icon">📝</span>
+                    <span class="tree-item-name">Site</span>
+                    <span class="tree-item-add">🔵</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ⬛ Properties -->
+        <div class="properties" id="properties-panel">
+            <div class="properties-header">Propriedades</div>
+            <div id="properties-content">
+                <p style="color: #999; font-size: 13px;">Selecione um objeto no Explorer para ver suas propriedades.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Assistant Panel -->
+    <div class="ai-panel" id="ai-panel">
+        <div class="ai-header">
+            <h3>🤖 Assistente IA</h3>
+            <button class="modal-close" id="close-ai">&times;</button>
+        </div>
+        <div class="ai-messages" id="ai-messages">
+            <div class="ai-message assistant">
+                Olá! Sou seu assistente Fire Server. Posso ajudar com:
+                <ul>
+                    <li>Explicar erros no código</li>
+                    <li>Sugerir correções</li>
+                    <li>Traduzir ideias em DSL ou Lua</li>
+                </ul>
+                Como posso ajudar?
+            </div>
+        </div>
+        <div class="ai-input-area">
+            <textarea class="ai-input" id="ai-input" placeholder="Digite sua pergunta..."></textarea>
+            <button class="toolbar-btn primary" id="ai-send" style="margin-top: 10px; width: 100%;">
+                Enviar
+            </button>
+        </div>
+    </div>
+
+    <!-- Config Modal -->
+    <div class="modal" id="config-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>⚙️ Configurações do Site</h3>
+                <button class="modal-close" id="close-config">&times;</button>
+            </div>
+            <div class="property-group">
+                <label class="property-label">Título do Site</label>
+                <input type="text" class="property-input" id="site-title" value="Meu Site">
+            </div>
+            <div class="property-group">
+                <label class="property-label">Descrição (SEO)</label>
+                <textarea class="property-input" id="site-description" rows="3">Descrição do meu site</textarea>
+            </div>
+            <div class="property-group">
+                <label class="property-label">Imagem OG (URL)</label>
+                <input type="text" class="property-input" id="site-og-image" placeholder="https://...">
+            </div>
+            <div class="property-group">
+                <label class="property-label">Username</label>
+                <input type="text" class="property-input" id="site-username" placeholder="username-0000">
+            </div>
+            <button class="toolbar-btn primary" style="width: 100%; margin-top: 10px;">
+                Salvar Configurações
+            </button>
+        </div>
+    </div>
+
+    <!-- Monaco Editor CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
+    
+    <!-- Fengari (Lua VM em JS) -->
+    <script src="https://cdn.jsdelivr.net/npm/fengari-web@0.1.4/dist/fengari-web.js"></script>
+    
+    <!-- Scripts do projeto -->
+    <script src="../js/config.js"></script>
+    <script src="../js/workspace.js"></script>
+    <script src="../js/lua-api.js"></script>
+    <script src="../js/dsl-parser.js"></script>
+    <script src="../js/editor.js"></script>
+    
+    <script>
+        // Inicializar Monaco Editor
+        require.config({ paths: { vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs' } });
+        
+        require(['vs/editor/editor.main'], function() {
+            window.monacoEditor = monaco.editor.create(document.getElementById('preview-area'), {
+                value: '-- Fire Server Lua Script\n-- Use a API workspace para criar elementos\n\nlocal text = Create.Text(workspace.Site.Page1)\ntext.Text = "Olá, Fire Server!"\ntext.Color = Color.RGB(255, 107, 53)\n',
+                language: 'lua',
+                theme: 'vs-dark',
+                automaticLayout: true,
+                minimap: { enabled: false },
+                fontSize: 14,
+                lineNumbers: 'on',
+                scrollBeyondLastLine: false,
+                wordWrap: 'on'
+            });
+            
+            // Ocultar loading
+            document.getElementById('preview-loading').style.display = 'none';
+        });
+    </script>
+</body>
+</html>
