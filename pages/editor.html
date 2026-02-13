@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fire Server - Editor</title>
+    <link rel="stylesheet" href="../css/editor.css">
+    <!-- Monaco Editor -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/editor/editor.main.min.css">
+</head>
+<body>
+    <!-- Layout conforme especificação: 
+        🟧🟧🟦🟦🟦🟦🟦🟪🟪🟪
+        🟧🟧🟩🟩🟩🟩🟩🟪🟪🟪
+        🟧🟧🟨🟨🟨🟨🟨🟪🟪🟪
+        🟧🟧🟨🟨🟨🟨🟨⬛⬛⬛
+        🟧🟧⬜⬜⬜⬜⬜⬛⬛⬛
+    -->
+    
+    <!-- 🟧 Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <span class="logo">🔥</span>
+        </div>
+        <nav class="sidebar-nav">
+            <button class="sidebar-btn" id="toggleSidebar" title="Fechar barra lateral">
+                <span class="emoji">◀️</span>
+                <span class="label">Fechar</span>
+            </button>
+            <button class="sidebar-btn" id="aiAssistant" title="Conversar com IA">
+                <span class="emoji">🤖</span>
+                <span class="label">IA</span>
+            </button>
+            <button class="sidebar-btn" id="discordBtn" title="Discord">
+                <span class="emoji">💬</span>
+                <span class="label">Discord</span>
+            </button>
+            <button class="sidebar-btn" id="backToMenu" title="Voltar para menu">
+                <span class="emoji">🏠</span>
+                <span class="label">Menu</span>
+            </button>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- 🟦 Toolbar -->
+        <div class="toolbar">
+            <div class="toolbar-group">
+                <button class="tool-btn" id="selectTool" title="Selecionar">
+                    <span class="emoji">👆</span>
+                    <span>Selecionar</span>
+                </button>
+                <button class="tool-btn" id="moveTool" title="Mover">
+                    <span class="emoji">✋</span>
+                    <span>Mover</span>
+                </button>
+                <button class="tool-btn" id="scaleTool" title="Escalonar">
+                    <span class="emoji">↔️</span>
+                    <span>Escalonar</span>
+                </button>
+            </div>
+            <div class="toolbar-group">
+                <button class="tool-btn btn-success" id="testBtn" title="Testar">
+                    <span class="emoji">▶️</span>
+                    <span>Testar</span>
+                </button>
+                <button class="tool-btn btn-error" id="stopBtn" title="Parar" disabled>
+                    <span class="emoji">⏹️</span>
+                    <span>Parar</span>
+                </button>
+            </div>
+            <div class="toolbar-group">
+                <button class="tool-btn" id="settingsBtn" title="Configurar Site">
+                    <span class="emoji">⚙️</span>
+                    <span>Configurar</span>
+                </button>
+                <button class="tool-btn btn-primary" id="saveBtn" title="Salvar">
+                    <span class="emoji">💾</span>
+                    <span>Salvar</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 🟩 Tabs -->
+        <div class="tabs">
+            <div class="tab-list" id="tabList">
+                <div class="tab active" data-tab="preview">
+                    <span class="tab-icon">📄</span>
+                    <span class="tab-name">Preview</span>
+                    <button class="tab-close" title="Fechar">&times;</button>
+                </div>
+            </div>
+            <button class="tab-new" id="newTab" title="Nova aba">+</button>
+        </div>
+
+        <!-- Container para Preview e Output -->
+        <div class="editor-container">
+            <!-- 🟨 Preview Area -->
+            <div class="preview-area" id="previewArea">
+                <iframe id="previewFrame" frameborder="0"></iframe>
+            </div>
+
+            <!-- ⬜ Output Console -->
+            <div class="output-panel" id="outputPanel">
+                <div class="output-header">
+                    <span>📋 Output</span>
+                    <button id="clearOutput" title="Limpar">🗑️</button>
+                </div>
+                <div class="output-content" id="outputContent">
+                    <div class="output-message info">
+                        <span class="output-time">[00:00:00]</span>
+                        <span class="output-text">Fire Server Editor carregado.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 🟪 Explorer -->
+    <aside class="explorer">
+        <div class="panel-header">
+            <span>🗂️ Explorador</span>
+        </div>
+        <div class="explorer-tree" id="explorerTree">
+            <!-- Tree será populada dinamicamente -->
+        </div>
+    </aside>
+
+    <!-- ⬛ Properties -->
+    <aside class="properties">
+        <div class="panel-header">
+            <span>🔧 Propriedades</span>
+        </div>
+        <div class="properties-content" id="propertiesContent">
+            <p class="no-selection">Nenhum objeto selecionado</p>
+        </div>
+    </aside>
+
+    <!-- Modal de Configurações -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>⚙️ Configurações do Site</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="siteTitle">Título do Site</label>
+                    <input type="text" id="siteTitle" placeholder="Meu Site Incrível">
+                </div>
+                <div class="form-group">
+                    <label for="siteDescription">Descrição</label>
+                    <textarea id="siteDescription" rows="3" placeholder="Descrição para SEO..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="siteUsername">Username (URL)</label>
+                    <input type="text" id="siteUsername" placeholder="usuario-0000" pattern="^(?!.*([_-])\1)[a-z](?:[a-z0-9_-]{1,18}[a-z0-9])$">
+                    <small>Formato: minúsculas, sem espaços, 3-20 caracteres</small>
+                </div>
+                <div class="form-group">
+                    <label for="ogImage">Imagem Open Graph (URL)</label>
+                    <input type="url" id="ogImage" placeholder="https://...">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelSettings">Cancelar</button>
+                <button class="btn-primary" id="saveSettings">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de IA Assistant -->
+    <div class="modal" id="aiModal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2>🤖 Assistente IA</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="ai-chat" id="aiChat">
+                    <div class="ai-message ai-assistant">
+                        <strong>IA:</strong> Olá! Como posso ajudar você hoje? Posso explicar erros, sugerir correções ou traduzir suas ideias em código Lua.
+                    </div>
+                </div>
+                <div class="ai-input-area">
+                    <input type="text" id="aiInput" placeholder="Digite sua pergunta...">
+                    <button class="btn-primary" id="aiSend">Enviar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fengari-web@0.1.4/dist/fengari-web.js"></script>
+    <script src="../js/core/config.js"></script>
+    <script src="../js/core/auth.js"></script>
+    <script src="../js/core/workspace.js"></script>
+    <script src="../js/lua/lua-sandbox.js"></script>
+    <script src="../js/lua/lua-api.js"></script>
+    <script src="../js/core/renderer.js"></script>
+    <script src="../js/core/editor.js"></script>
+    
+    <script>
+        // Verificar autenticação ao carregar
+        window.addEventListener('DOMContentLoaded', () => {
+            // Comentado para permitir uso sem login durante desenvolvimento
+            // fireAuth.requireAuth();
+            
+            // Atualiza UI com dados do usuário se autenticado
+            if (fireAuth.isAuthenticated()) {
+                fireAuth.updateUserUI();
+                
+                // Log de info
+                const logins = fireAuth.getActiveLogins();
+                const sitesAvailable = fireAuth.getAvailableSites();
+                console.log(`✅ Logado com ${sitesAvailable} site(s) disponível(is)`);
+                
+                if (logins.google) console.log('  - Google:', logins.google.email);
+                if (logins.discord) console.log('  - Discord:', logins.discord.name);
+            } else {
+                console.log('⚠️ Não autenticado - algumas funcionalidades podem estar limitadas');
+            }
+        });
+    </script>
+</body>
+</html>
