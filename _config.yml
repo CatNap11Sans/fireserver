@@ -1,0 +1,40 @@
+# GitHub Pages Configuration for Fire Server
+
+# Site settings
+title: Fire Server
+description: A plataforma de criação de sites livre e poderosa
+baseurl: ""
+url: "https://catnap11sans.github.io/fireserver"
+
+# Build settings
+markdown: kramdown
+theme: null
+
+# Exclude files from the build
+exclude:
+  - README.md
+  - .gitignore
+  - node_modules/
+  - package.json
+  - package-lock.json
+
+# Include files
+include:
+  - _config.yml
+  - .htaccess
+
+# Plugins
+plugins:
+  - jekyll-sitemap
+  - jekyll-seo-tag
+
+# SEO
+lang: pt-BR
+author: Fire Server Development Teams
+
+# Social
+social:
+  discord: https://discord.gg/6MWH9Gyyv3
+
+# Collections (if needed later)
+collections_dir: collections
